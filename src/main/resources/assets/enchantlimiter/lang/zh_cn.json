@@ -1,0 +1,5 @@
+{
+"enchantlimiter.points": "付魔点数： %s",
+"enchantlimiter.tip": "付魔点要求： %1$s + %2$s * %3$s = %4$s",
+"enchantlimiter.shift": "按SHIFT查看付魔点要求……"
+}

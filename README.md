@@ -1,0 +1,1 @@
+Limits the number of enchantments that can be applied to an item.
