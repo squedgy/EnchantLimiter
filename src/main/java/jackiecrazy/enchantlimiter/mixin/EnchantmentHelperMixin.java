@@ -1,15 +1,15 @@
 package jackiecrazy.enchantlimiter.mixin;
 
 import jackiecrazy.enchantlimiter.EnchantLimiter;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -23,7 +23,7 @@ public class EnchantmentHelperMixin {
      */
     @Overwrite()
     public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack) {
-        ListNBT listnbt = new ListNBT();
+        ListTag listnbt = new ListTag();
         double accumulated = 0;
         double max = EnchantLimiter.getTotalEnchantPoints(stack);
         //iterate over all negative values first to make space
@@ -33,12 +33,12 @@ public class EnchantmentHelperMixin {
                 int i = entry.getValue();
                 //only iterating negatives
                 if (EnchantLimiter.getRequiredEnchantPoints(enchantment, i) >= 0) continue;
-                CompoundNBT compoundnbt = new CompoundNBT();
+                CompoundTag compoundnbt = new CompoundTag();
                 compoundnbt.putString("id", String.valueOf((Object) Registry.ENCHANTMENT.getKey(enchantment)));
                 compoundnbt.putShort("lvl", (short) i);
                 listnbt.add(compoundnbt);
                 if (stack.getItem() instanceof EnchantedBookItem) {
-                    EnchantedBookItem.addEnchantment(stack, new EnchantmentData(enchantment, i));
+                    EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(enchantment, i));
                 }
                 accumulated += EnchantLimiter.getRequiredEnchantPoints(enchantment, i);
             }
@@ -56,21 +56,21 @@ public class EnchantmentHelperMixin {
                     } else break;
                 }
                 if (i <= 0) continue;
-                CompoundNBT compoundnbt = new CompoundNBT();
+                CompoundTag compoundnbt = new CompoundTag();
                 compoundnbt.putString("id", String.valueOf((Object) Registry.ENCHANTMENT.getKey(enchantment)));
                 compoundnbt.putShort("lvl", (short) i);
                 listnbt.add(compoundnbt);
                 if (stack.getItem() instanceof EnchantedBookItem) {
-                    EnchantedBookItem.addEnchantment(stack, new EnchantmentData(enchantment, i));
+                    EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(enchantment, i));
                 }
                 accumulated += EnchantLimiter.getRequiredEnchantPoints(enchantment, i);
             }
         }
 
         if (listnbt.isEmpty()) {
-            stack.removeChildTag("Enchantments");
+            stack.removeTagKey("Enchantments");
         } else if (stack.getItem() != Items.ENCHANTED_BOOK) {
-            stack.setTagInfo("Enchantments", listnbt);
+            stack.addTagElement("Enchantments", listnbt);
         }
     }
 }

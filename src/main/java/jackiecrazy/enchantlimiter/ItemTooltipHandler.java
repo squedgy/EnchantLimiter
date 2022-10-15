@@ -1,22 +1,18 @@
 package jackiecrazy.enchantlimiter;
 
-import net.java.games.input.Component;
-import net.java.games.input.Keyboard;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.text.*;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Iterator;
@@ -31,29 +27,29 @@ public class ItemTooltipHandler {
         if (e.getItemStack().isEnchanted() || e.getItemStack().isEnchantable() || e.getItemStack().getItem() instanceof EnchantedBookItem) {
             final double used = EnchantLimiter.getUsedEnchantPoints(e.getItemStack());
             final double total = EnchantLimiter.getTotalEnchantPoints(e.getItemStack());
-            e.getToolTip().add(new TranslationTextComponent("enchantlimiter.points", (used > total ? TextFormatting.RED : "") + "" + used + "" + TextFormatting.RESET + "/" + total));
+            e.getToolTip().add(new TranslatableComponent("enchantlimiter.points", (used > total ? ChatFormatting.RED : "") + "" + used + "" + ChatFormatting.RESET + "/" + total));
         }
         if (e.getItemStack().getItem() instanceof EnchantedBookItem) {
             if(Screen.hasShiftDown())
             insertDescriptionTooltips(e.getToolTip(), e.getItemStack());
-            else e.getToolTip().add(new TranslationTextComponent("enchantlimiter.shift"));
+            else e.getToolTip().add(new TranslatableComponent("enchantlimiter.shift"));
         }
     }
 
-    private static void insertDescriptionTooltips(List<ITextComponent> tips, ItemStack stack) {
+    private static void insertDescriptionTooltips(List<Component> tips, ItemStack stack) {
 
         final Iterator<Map.Entry<Enchantment, Integer>> enchants = EnchantmentHelper.getEnchantments(stack).entrySet().iterator();
         while (enchants.hasNext()) {
             final Map.Entry<Enchantment, Integer> entry = enchants.next();
             Enchantment enchant=entry.getKey();
-            final ListIterator<ITextComponent> tooltips = tips.listIterator();
+            final ListIterator<Component> tooltips = tips.listIterator();
             while (tooltips.hasNext()) {
-                final ITextComponent component = tooltips.next();
-                if (component instanceof TranslationTextComponent && ((TranslationTextComponent) component).getKey().equals(enchant.getName())) {
+                final Component component = tooltips.next();
+                if (component instanceof TranslatableComponent && ((TranslatableComponent) component).getKey().equals(enchant.getDescriptionId())) {
                     final LimiterConfig.EnchantInfo info = LimiterConfig.map.getOrDefault(enchant, LimiterConfig.DEFAULT);
-                    tooltips.add(new TranslationTextComponent("enchantlimiter.tip", info.getBase(), info.getIncrement(), entry.getValue(), EnchantLimiter.getRequiredEnchantPoints(enchant, entry.getValue())));
+                    tooltips.add(new TranslatableComponent("enchantlimiter.tip", info.getBase(), info.getIncrement(), entry.getValue(), EnchantLimiter.getRequiredEnchantPoints(enchant, entry.getValue())));
                     if (enchants.hasNext()) {
-                        tooltips.add(new StringTextComponent(""));
+                        tooltips.add(new TextComponent(""));
                     }
                     break;
                 }

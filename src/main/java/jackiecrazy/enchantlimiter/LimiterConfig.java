@@ -1,31 +1,21 @@
 package jackiecrazy.enchantlimiter;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Tuple;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = EnchantLimiter.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LimiterConfig {
@@ -85,7 +75,7 @@ public class LimiterConfig {
     }
 
     @SubscribeEvent
-    public static void loadConfig(ModConfig.ModConfigEvent e) {
+    public static void loadConfig(ModConfigEvent e) {
         if (e.getConfig().getSpec() == CONFIG_SPEC) {
             try {
                 map.clear();
