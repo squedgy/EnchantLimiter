@@ -23,10 +23,10 @@ public class EnchantLimiter {
     }
 
     public static double getTotalEnchantPoints(ItemStack stack) {
-        double ret=(stack.getItemEnchantability() * LimiterConfig.pointsPerEnchantability) + LimiterConfig.basePoint;
+        double ret=(stack.getEnchantmentValue() * LimiterConfig.pointsPerEnchantability) + LimiterConfig.basePoint;
         if (LimiterConfig.customItems.containsKey(stack.getItem())) {
              ret = LimiterConfig.customItems.get(stack.getItem()).getBase();
-            ret += (stack.getItemEnchantability() * LimiterConfig.customItems.get(stack.getItem()).getIncrement());
+            ret += (stack.getEnchantmentValue() * LimiterConfig.customItems.get(stack.getItem()).getIncrement());
         }
         if(stack.hasTag())
             ret+=stack.getTag().getDouble("extraEnchantPoints");

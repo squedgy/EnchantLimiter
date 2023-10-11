@@ -26,7 +26,7 @@ public class LimiterConfig {
     public static HashMap<Item, EnchantInfo> customItems = new HashMap<>();
     public static EnchantInfo DEFAULT = new EnchantInfo(0, 1);
     public static double pointsPerEnchantability, grain;
-    public static int basePoint;
+    public static double basePoint;
 
     static {
         final Pair<LimiterConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(LimiterConfig::new);
@@ -36,7 +36,7 @@ public class LimiterConfig {
 
     private final ForgeConfigSpec.DoubleValue ppe;
     private final ForgeConfigSpec.DoubleValue granularity;
-    private final ForgeConfigSpec.IntValue basePoints, baseCost, incrementalCost;
+    private final ForgeConfigSpec.DoubleValue basePoints, baseCost, incrementalCost;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _customItems;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _enchantDefinition;
 
@@ -44,11 +44,11 @@ public class LimiterConfig {
         b.push("enchantability");
         ppe = b.comment("how much each point of enchantability in the item will add to its enchantment point pool").defineInRange("points per enchantability", 0.5, 0d, Double.MAX_VALUE);
         granularity = b.comment("if the number of enchantment points falls within this distance to a whole number, it will be rounded to the whole number instead. This allows you to have clean 1/3 or 1/7 for the incremental cost of enchantments.").defineInRange("granularity", 0.1, 0d, 1);
-        basePoints = b.comment("how many enchantment points an item starts with").defineInRange("base points", 10, 0, Integer.MAX_VALUE);
-        baseCost = b.comment("the default cost to add a new enchantment onto an item.").defineInRange("base cost", 0, 0, Integer.MAX_VALUE);
-        incrementalCost = b.comment("the default cost to add one level to any existing enchantment on the item. An enchantment with level 1 will apply both the base cost and the incremental cost, once each.").defineInRange("incremental cost", 1, 0, Integer.MAX_VALUE);
+        basePoints = b.comment("how many enchantment points an item starts with").defineInRange("base points", 10, 0d, Double.MAX_VALUE);
+        baseCost = b.comment("the default cost to add a new enchantment onto an item.").defineInRange("base cost", 0, 0d, Double.MAX_VALUE);
+        incrementalCost = b.comment("the default cost to add one level to any existing enchantment on the item. An enchantment with level 1 will apply both the base cost and the incremental cost, once each.").defineInRange("incremental cost", 1, 0, Double.MAX_VALUE);
         _customItems = b.comment("Items that have their own enchantment point cap. Format is name, base enchantability, increment per extra point of enchantability.").defineList("custom items", Arrays.asList("minecraft:fishing_rod, 20, 0.5", "minecraft:bow, 15, 1", "minecraft:enchanted_book, 30, 0"), String.class::isInstance);
-        _enchantDefinition = b.comment("I hate the toml system so much. Define enchantments here. Format is name, base cost, incremental cost.").defineList("enchantments", Arrays.asList("minecraft:mending, 5, 0", "minecraft:sharpness, 0, 1"), String.class::isInstance);
+        _enchantDefinition = b.comment("It's really irritating how nightconfig doesn't keep the entries in separate lines, but alas. Define enchantments here. Format is name, base cost, incremental cost.").defineList("enchantments", Arrays.asList("minecraft:mending, 5, 0", "minecraft:sharpness, 0, 1"), String.class::isInstance);
         b.pop();
 //        b.push("total enchantment cost is calculated as cost to apply+(additional cost per level*level), so for an enchantment that only has 1 level (eg mending) you can leave either of the two as 0");
 //        b.pop();
@@ -92,7 +92,7 @@ public class LimiterConfig {
                     double base = CONFIG.baseCost.get();
                     double incr = CONFIG.incrementalCost.get();
                     for (String element : list) {
-                        if (element.startsWith(ench.getRegistryName().toString())) {
+                        if (element.startsWith(ForgeRegistries.ENCHANTMENTS.getKey(ench).toString())) {
                             String[] split = element.split(",");
                             base = Double.parseDouble(split[1].trim());
                             incr = Double.parseDouble(split[2].trim());

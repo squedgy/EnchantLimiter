@@ -29,7 +29,7 @@ displayURL="http://example.com/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
-credits="The people behind EvalEx" #optional
+credits="Content Council" #optional
 # A text field displayed in the mod UI
 authors="Jackiecrazy" #optional
 # The description text for the mod (multi line!) (#mandatory)
@@ -53,6 +53,6 @@ Limits the amount of enchantments that can go on a single item, based on its enc
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.18.0,1.19)"
+    versionRange="[1.19.2,1.20)"
     ordering="NONE"
     side="BOTH"
