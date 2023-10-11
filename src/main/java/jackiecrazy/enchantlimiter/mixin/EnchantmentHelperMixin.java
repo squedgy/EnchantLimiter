@@ -1,8 +1,6 @@
 package jackiecrazy.enchantlimiter.mixin;
 
 import jackiecrazy.enchantlimiter.EnchantLimiter;
-import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
@@ -16,10 +14,11 @@ import org.spongepowered.asm.mixin.Overwrite;
 import java.util.Map;
 
 @Mixin(EnchantmentHelper.class)
-public class EnchantmentHelperMixin {
+public abstract class EnchantmentHelperMixin {
 
     /**
      * @author Jackiecrazy
+     * @reason yes
      */
     @Overwrite()
     public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack) {
@@ -33,10 +32,7 @@ public class EnchantmentHelperMixin {
                 int i = entry.getValue();
                 //only iterating negatives
                 if (EnchantLimiter.getRequiredEnchantPoints(enchantment, i) >= 0) continue;
-                CompoundTag compoundnbt = new CompoundTag();
-                compoundnbt.putString("id", String.valueOf((Object) Registry.ENCHANTMENT.getKey(enchantment)));
-                compoundnbt.putShort("lvl", (short) i);
-                listnbt.add(compoundnbt);
+                listnbt.add(EnchantmentHelper.storeEnchantment(EnchantmentHelper.getEnchantmentId(enchantment), i));
                 if (stack.getItem() instanceof EnchantedBookItem) {
                     EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(enchantment, i));
                 }
@@ -56,10 +52,7 @@ public class EnchantmentHelperMixin {
                     } else break;
                 }
                 if (i <= 0) continue;
-                CompoundTag compoundnbt = new CompoundTag();
-                compoundnbt.putString("id", String.valueOf((Object) Registry.ENCHANTMENT.getKey(enchantment)));
-                compoundnbt.putShort("lvl", (short) i);
-                listnbt.add(compoundnbt);
+                listnbt.add(EnchantmentHelper.storeEnchantment(EnchantmentHelper.getEnchantmentId(enchantment), i));
                 if (stack.getItem() instanceof EnchantedBookItem) {
                     EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(enchantment, i));
                 }
